@@ -1,6 +1,7 @@
 package rca.soap.api.endpoint;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.ws.server.endpoint.annotation.Endpoint;
@@ -17,6 +18,8 @@ import rca.soap.classc.courses.GetAllCourseDetailsRequest;
 import rca.soap.classc.courses.GetAllCourseDetailsResponse;
 import rca.soap.classc.courses.GetCourseDetailsRequest;
 import rca.soap.classc.courses.GetCourseDetailsResponse;
+import rca.soap.classc.courses.UpdateCourseDetailsRequest;
+import rca.soap.classc.courses.UpdateCourseDetailsResponse;
 import rca.soap.api.bean.Course;
 import rca.soap.api.repository.ICourseRepository;
 
@@ -67,6 +70,26 @@ public class CourseDetailsEndPoint {
 		return courseDetailsResponse;
 	}
 	
+	@PayloadRoot(namespace = "http://soap.rca/classc/courses", localPart = "UpdateCourseDetailsRequest")
+	@ResponsePayload
+	public UpdateCourseDetailsResponse update(@RequestPayload UpdateCourseDetailsRequest request) {
+		UpdateCourseDetailsResponse courseDetailsResponse = null;
+		Optional <Course> existingCourse = this.courseRepository.findById(request.getCourseDetails().getId());
+		if(existingCourse.isEmpty() || existingCourse == null) {
+			courseDetailsResponse = mapCourseDetail(null, "Id not found");
+		}
+		if(existingCourse.isPresent()) {
+			
+			Course _course = existingCourse.get();
+			_course.setName(request.getCourseDetails().getName());
+			_course.setDescription(request.getCourseDetails().getDescription());
+			courseRepository.save(_course);
+			courseDetailsResponse = mapCourseDetail(_course, "Updated successfully");
+			
+		}
+		return courseDetailsResponse;
+	}
+	
 	@PayloadRoot(namespace = "http://soap.rca/classc/courses", localPart = "DeleteCourseDetailsRequest")
 	@ResponsePayload
 	public DeleteCourseDetailsResponse save(@RequestPayload DeleteCourseDetailsRequest request) {
@@ -84,6 +107,14 @@ public class CourseDetailsEndPoint {
 		GetCourseDetailsResponse courseDetailsResponse = new GetCourseDetailsResponse();
 
 		courseDetailsResponse.setCourseDetails(courseDetails);
+		return courseDetailsResponse;
+	}
+	private UpdateCourseDetailsResponse mapCourseDetail(Course course, String message) {
+		CourseDetails courseDetails = mapCourse(course);
+		UpdateCourseDetailsResponse courseDetailsResponse = new UpdateCourseDetailsResponse();
+
+		courseDetailsResponse.setCourseDetails(courseDetails);
+		courseDetailsResponse.setMessage(message);
 		return courseDetailsResponse;
 	}
 

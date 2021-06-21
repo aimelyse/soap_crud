@@ -49,6 +49,22 @@
 			</xs:sequence>
 		</xs:complexType>
 	</xs:element>
+	<xs:element name="UpdateCourseDetailsRequest">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="courseDetails" type="tns:CourseDetails" />
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	
+	<xs:element name="UpdateCourseDetailsResponse">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="courseDetails" type="tns:CourseDetails" />
+				<xs:element name="message" type="xs:string" />
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
 	
 	<xs:element name="DeleteCourseDetailsRequest">
 		<xs:complexType>
